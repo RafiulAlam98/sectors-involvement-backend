@@ -21,23 +21,38 @@ async function run() {
     await client.connect();
     const database = client.db("sectors-involvement-task");
     const sectorCollection = database.collection("sectors");
- 
+    const usersCollection = database.collection("users");
+
     //get all sectors
-    app.get("/sectors",async (req, res) => {
+    app.get("/sectors", async (req, res) => {
       const result = await sectorCollection.find({}).toArray();
       res.send(result);
     });
 
+    // post the users
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+
+      console.log(user);
+      const result = await usersCollection.insertOne(user);
+
+      res.send({ success: true });
+    });
+
+    // get all users
+    app.get("/users", async (req, res) => {
+      const result = await usersCollection.find({}).toArray();
+      res.send(result);
+    });
   } finally {
     //  await client.close()
   }
 }
-   run().catch(console.dir);
+run().catch(console.dir);
 
-
-   app.get('/', (req, res) => {
-    res.send('Hello Doctors portal!')
-})
+app.get("/", (req, res) => {
+  res.send("Server Running");
+});
 
     app.listen(port, () => {
       console.log(`listening from port ${port}`)
